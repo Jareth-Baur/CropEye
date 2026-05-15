@@ -1,0 +1,11 @@
+pip install -r requirements.txt
+
+
+
+
+update public.flights
+set status = 'pending'
+where flight_name = 'Sample Flight';
+
+update public.flights
+set status = 'pending';

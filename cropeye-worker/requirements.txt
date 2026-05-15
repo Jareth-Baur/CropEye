@@ -1,0 +1,7 @@
+ultralytics
+opencv-python
+supabase
+python-dotenv
+requests
+ffmpeg-python
+numpy
