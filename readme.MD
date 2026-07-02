@@ -1,69 +1,113 @@
 # 🌾 CropEye
 
-**CropEye** is an AI-powered crop monitoring system that uses aerial imagery and computer vision to detect crop diseases, helping farmers monitor field health and make informed decisions through precision agriculture.
+CropEye is an AI-powered crop monitoring system that uses drone imagery and computer vision to detect crop diseases, helping farmers monitor field health and improve precision agriculture.
 
 ---
 
-## 📌 Features
+## ✨ Features
 
-* 🌱 AI-powered crop disease detection
-* 🚁 Drone image processing and analysis
-* 📊 Interactive dashboard for monitoring crop health
-* 📍 Flight history and image management
-* 📈 Detection reports and analytics
-* ☁️ Cloud-based data storage
-* 🔍 High-accuracy object detection using YOLOv8
+- 🌱 AI-powered crop disease detection
+- 🚁 Drone image processing
+- 📊 Detection reports and analytics
+- 📍 Flight history management
+- 🖼️ Annotated image generation
+- ☁️ Supabase cloud database and storage
+- ⚡ YOLOv8-based object detection
 
 ---
 
 ## 🛠️ Tech Stack
 
 ### Frontend
-
-* Next.js
-* React
-* TypeScript
-* Tailwind CSS
+- Next.js
+- React
+- TypeScript
+- Tailwind CSS
 
 ### Backend
-
-* Python
-* FastAPI
+- Python
+- FastAPI
 
 ### AI / Machine Learning
+- YOLOv8
+- OpenCV
+- Ultralytics
 
-* YOLOv8
-* OpenCV
-* Ultralytics
+### Database
+- Supabase (PostgreSQL)
 
-### Database & Storage
-
-* Supabase
-
-### Deployment
-
-* Vercel
-* Supabase Storage
+### Storage
+- Supabase Storage
 
 ---
 
-## 📂 Project Structure
+## 🗄️ Database Schema
+
+### Flights
+
+Stores information about every drone flight uploaded to the system.
+
+| Column | Type |
+|---------|------|
+| id | UUID (Primary Key) |
+| flight_name | Text |
+| uploaded_video_url | Text |
+| processed_video_url | Text |
+| status | Text |
+| total_detections | Integer |
+| created_at | Timestamp |
+
+---
+
+### Detections
+
+Stores every disease detected from processed drone imagery.
+
+| Column | Type |
+|---------|------|
+| id | UUID (Primary Key) |
+| flight_id | UUID |
+| frame_name | Text |
+| timestamp_sec | Double Precision |
+| disease_name | Text |
+| confidence | Double Precision |
+| bbox_x | Double Precision |
+| bbox_y | Double Precision |
+| bbox_width | Double Precision |
+| bbox_height | Double Precision |
+| frame_image_url | Text |
+| created_at | Timestamp |
+
+### Relationship
+
+```text
+Flights (1)
+      │
+      │ id
+      ▼
+Detections (Many)
+flight_id → flights.id
+```
+
+---
+
+## 📁 Project Structure
 
 ```text
 CropEye/
-├── app/
-├── components/
-├── public/
+├── frontend/
 ├── backend/
 ├── models/
 ├── scripts/
+├── app/
+├── public/
 ├── utils/
 └── README.md
 ```
 
 ---
 
-## 🚀 Getting Started
+## 🚀 Installation
 
 ### Clone the repository
 
@@ -78,7 +122,7 @@ cd CropEye
 npm install
 ```
 
-### Run the frontend
+### Start the frontend
 
 ```bash
 npm run dev
@@ -90,7 +134,7 @@ npm run dev
 pip install -r requirements.txt
 ```
 
-### Start the backend server
+### Start the backend
 
 ```bash
 python app.py
@@ -100,7 +144,7 @@ python app.py
 
 ## 🧠 AI Model
 
-CropEye utilizes a custom-trained **YOLOv8** model for crop disease detection from aerial images captured by drones. The model identifies diseased plants and generates annotated outputs to support early intervention.
+CropEye uses a custom-trained **YOLOv8** model to detect crop diseases from aerial images captured by drones. Detected diseases are localized with bounding boxes and stored in the database together with confidence scores for further analysis.
 
 ---
 
@@ -108,17 +152,23 @@ CropEye utilizes a custom-trained **YOLOv8** model for crop disease detection fr
 
 Add screenshots of:
 
-
+- Dashboard
+- Flight Upload
+- Drone Replay
+- Detection Results
+- Reports
+- Analytics
 
 ---
 
-## 🎯 Future Improvements
+## 🚀 Future Improvements
 
-* Real-time drone integration
-* Multi-crop disease detection
-* Mobile application
-* Weather data integration
-* Predictive disease analytics
+- Real-time drone streaming
+- Multi-crop disease detection
+- Mobile application
+- Weather data integration
+- Predictive disease analytics
+- GPS-based disease mapping
 
 ---
 
@@ -130,4 +180,4 @@ This project is licensed under the MIT License.
 
 ## 👨‍💻 Developers
 
-Developed as an academic and research project focused on applying artificial intelligence and computer vision to precision agriculture.
+Developed as a capstone project for applying Artificial Intelligence, Computer Vision, and Precision Agriculture to support early crop disease detection using drone imagery.
