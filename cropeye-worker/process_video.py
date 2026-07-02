@@ -90,7 +90,7 @@ def process_frames(frames_folder):
                     # CLASSIFICATION CONFIDENCE FILTER
                     if class_confidence < 0.90:
                         continue
-
+                        
                     timestamp_sec = round(index / 10, 2)
                     
                     disease_name = classification_model.names[class_id]
