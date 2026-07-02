@@ -3,7 +3,13 @@ import cv2
 import subprocess
 from ultralytics import YOLO
 
-model = YOLO("models/cropeye_yolov8s_maize_detection_v1.pt")
+# MODELS
+detection_model = YOLO("models/cropeye_yolov8s_maize_detection_v3.pt")
+
+classification_model = YOLO("models/maizeleaf_classification_yoloV8s_v2.pt")
+
+names = detection_model.names.copy()
+names[len(names)] = "Unknown"
 
 
 def extract_frames(video_path, output_folder):
@@ -25,60 +31,94 @@ def extract_frames(video_path, output_folder):
 
     print("Frames extracted successfully")
 
+detection_model = YOLO("models/cropeye_yolov8s_maize_detection_v2.pt")
 
-def process_frames(frames_folder, annotated_folder):
-
-    os.makedirs(annotated_folder, exist_ok=True)
+def process_frames(frames_folder):
 
     detections = []
+    
+    last_detection_times = {}
 
     frame_files = sorted(os.listdir(frames_folder))
 
     for index, frame_name in enumerate(frame_files):
+        # PROCESS ONLY EVERY 10TH FRAME
+        if index % 10 != 0:
+            continue
 
         frame_path = os.path.join(frames_folder, frame_name)
 
-        results = model(frame_path)
+        frame = cv2.imread(frame_path)
 
-        for result in results:
+        detection_results = detection_model(frame)
 
-            # SAVE YOLO-ANNOTATED FRAME
-            annotated_frame = result.plot()
-
-            output_path = os.path.join(
-                annotated_folder,
-                frame_name
-            )
-
-            cv2.imwrite(output_path, annotated_frame)
+        for result in detection_results:
 
             if result.boxes is None:
                 continue
 
             for box in result.boxes:
 
-                confidence = float(box.conf[0])
+                detection_confidence = float(box.conf[0])
 
-                if confidence < 0.60:
+                # DETECTION CONFIDENCE FILTER
+                #if detection_confidence < 0.10:
+                 #   continue
+
+                x1, y1, x2, y2 = map(int, box.xyxy[0])
+
+                # CROP DETECTED REGION
+                crop = frame[y1:y2, x1:x2]
+
+                if crop.size == 0:
                     continue
 
-                cls = int(box.cls[0])
+                # CLASSIFICATION
+                classification_results = classification_model(crop)
 
-                x1, y1, x2, y2 = box.xyxy[0]
+                for cls_result in classification_results:
 
-                timestamp_sec = round(index / 10, 2)
-                
-                detections.append({
-                    "frame_name": frame_name,
-                    "timestamp_sec": timestamp_sec,
-                    "disease_name": model.names[cls],
-                    "confidence": confidence,
-                    "bbox_x": float(x1),
-                    "bbox_y": float(y1),
-                    "bbox_width": float(x2 - x1),
-                    "bbox_height": float(y2 - y1)
-                })
+                    probs = cls_result.probs
+
+                    if probs is None:
+                        continue
+
+                    class_id = int(probs.top1)
+
+                    class_confidence = float(probs.top1conf)
+
+                    # CLASSIFICATION CONFIDENCE FILTER
+                    if class_confidence < 0.90:
+                        continue
+
+                    timestamp_sec = round(index / 10, 2)
+                    
+                    disease_name = classification_model.names[class_id]
+                    
+                    # SKIP DUPLICATE DISEASES WITHIN 2 SECONDS
+                    if disease_name in last_detection_times:
+
+                        if timestamp_sec - last_detection_times[disease_name] < 2:
+                            continue
+
+                    last_detection_times[disease_name] = timestamp_sec
+
+                    detections.append({
+                        "frame_name": frame_name,
+                        "timestamp_sec": timestamp_sec,
+                        "disease_name": disease_name,
+                        "confidence": class_confidence,
+                        "bbox_x": float(x1),
+                        "bbox_y": float(y1),
+                        "bbox_width": float(x2 - x1),
+                        "bbox_height": float(y2 - y1)
+                    })
 
     print(f"Detections found: {len(detections)}")
 
     return detections
+
+
+print(names)
+
+print(classification_model.names)
