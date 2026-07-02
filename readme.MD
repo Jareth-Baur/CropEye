@@ -150,17 +150,29 @@ CropEye uses a custom-trained **YOLOv8** model to detect crop diseases from aeri
 
 ## 📸 Screenshots
 
-Add screenshots of:
+### 🏠 Landing Page
 
-- Dashboard
-- Flight Upload
-- Drone Replay
-- Detection Results
-- Reports
-- Analytics
+![Landing Page](image.png)
 
 ---
 
+### 📊 Dashboard
+
+![Dashboard](image-1.png)
+
+---
+
+### ✈️ Flight Management
+
+![Flight Management](image-2.png)
+
+---
+
+### ⬆️ Upload Page
+
+![Upload Page](image-3.png)
+
+---
 ## 🚀 Future Improvements
 
 - Real-time drone streaming
