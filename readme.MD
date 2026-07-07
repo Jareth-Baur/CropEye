@@ -1,10 +1,10 @@
-# 🌾 CropEye
+#  CropEye
 
 CropEye is an AI-powered crop monitoring system that uses drone imagery and computer vision to detect crop diseases, helping farmers monitor field health and improve precision agriculture.
 
 ---
 
-## ✨ Features
+##  Features
 
 - 🌱 AI-powered crop disease detection
 - 🚁 Drone image processing
